@@ -61,10 +61,17 @@ class Graph:
     def add_vertex(self, key):
         """Add a new vertex object to the graph with the given key and return
         the vertex."""
-        # TODO increment the number of vertices
-        # TODO create a new vertex
-        # TODO add the new vertex to the vertex list
-        # TODO return the new vertex
+        # Raise error if key already exists in graph
+        if key in self.vert_list:
+            raise KeyError(f"Vertex({key}) is already in the Graph")
+        # Increment the number of vertices
+        self.num_vertices += 1
+        # Create a new vertex
+        new_vertex = Vertex(key)
+        # Add the new vertex to the vertex list
+        self.vert_list[key] = new_vertex
+        # Return the new vertex
+        return new_vertex
 
     def get_vertex(self, key):
         """Return the vertex if it exists"""
