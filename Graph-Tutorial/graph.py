@@ -205,6 +205,34 @@ class Graph:
                 # Remove parenthesis from strings, and convert strings to ints
                 self.add_edge(int(data[0]), int(data[1]))
 
+    def get_edge_list(self):
+        """Return a list of edges (with their weights if weighted)."""
+        edge_list = set()
+
+        for from_vert in self.get_vertices():
+            for to_vert in from_vert.get_neighbors():
+                # If the graph is weighted, store the edge weight in a graph
+                if self.weighted:
+                    weight = from_vert.neighbors[to_vert]
+
+                # If the graph is directed, as to edge list as normal
+                if self.directed and self.weighted:
+                    edge_list.add((from_vert.id, to_vert.id, weight))
+                if self.directed and not self.weighted:
+                    edge_list.add((from_vert.id, to_vert.id))
+
+                # If the graph is undirected, make sure only one edge between
+                # two vertices is counted. My implementation stores a directed
+                # edge from and to both vertices for easier traversals.
+                if not self.directed and self.weighted:
+                    if (to_vert.id, from_vert.id, weight) not in edge_list:
+                        edge_list.add((from_vert.id, to_vert.id, weight))
+                if not self.directed and not self.weighted:
+                    if (to_vert.id, from_vert.id) not in edge_list:
+                        edge_list.add((from_vert.id, to_vert.id))
+
+        return edge_list
+
     def breadth_first_search(self, vertex, n, only_new=True):
         """Find all vertices n edges away from the passed in vertex."""
         # Raise error if non vertex object is passed in as vertex
@@ -266,16 +294,6 @@ class Graph:
         # Return a set of all the vertices that can be reached at the nth level
         return set(vertex_deque)
 
-    def find_path(self, from_vert, to_vert):
-        # Make sure that both nodes from_vert and to_vert are actually in the graph
-        # Run BFS or DFS starting from from_vert
-        # Figure out a way to keep track of each path you take
-        # Once you find to_vert, end the search.
-        # Since you've been tracking the paths, find the path that goes from from_vert to to_vert
-        # Return the path, in the order of nodes visited starting with from_vert and ending with to_vert
-        # Driver code
-        pass
-
     def find_shortest_path(self, from_v, to_u):
         # Raise error if start or end does not exist in graph
         if from_v not in self.vert_list:
@@ -312,6 +330,16 @@ class Graph:
         # Reverse the path, and return it
         path[:] = reversed(path)
         return path
+
+    def find_path(self, from_vert, to_vert):
+            # Make sure that both nodes from_vert and to_vert are actually in the graph
+            # Run BFS or DFS starting from from_vert
+            # Figure out a way to keep track of each path you take
+            # Once you find to_vert, end the search.
+            # Since you've been tracking the paths, find the path that goes from from_vert to to_vert
+            # Return the path, in the order of nodes visited starting with from_vert and ending with to_vert
+            # Driver code
+        pass
 
     def clique(self):
         # Start with an arbitrary vertex u and add it to the clique
