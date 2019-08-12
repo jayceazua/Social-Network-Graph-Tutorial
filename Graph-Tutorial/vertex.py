@@ -22,7 +22,7 @@ class Vertex(object):
     def __str__(self):
         """Output the list of neighbors of this vertex."""
         return f"{self.id} adjacent to {[x.id for x in self.neighbors]}"
-
+      
     def __hash__(self):
         """Return hash of vertex class, for using this class as a dict key."""
         return hash(self.id)
