@@ -53,10 +53,12 @@ class Graph:
     A class demonstrating the essential facts and functionalities of graphs.
     """
 
-    def __init__(self):
+    def __init__(self, weighted=False, directed=True):
         """Initialize a graph object with an empty dictionary."""
         self.vert_list = {}
         self.num_vertices = 0
+        self.weighted = weighted
+        self.directed = directed
 
     def add_vertex(self, key):
         """Add a new vertex object to the graph with the given key and return
@@ -75,18 +77,40 @@ class Graph:
 
     def get_vertex(self, key):
         """Return the vertex if it exists"""
-        # TODO return the vertex if it is in the graph
+        # Raise error if key does not exist in graph
+        if key not in self.vert_list:
+            raise KeyError(f"Vertex({key}) is not in the Graph")
+        # Return the vertex if it is in the graph
+        return self.vert_list[key]
 
-    def add_edge(self, key1, key2, weight=1):
+    def add_edge(self, from_key, to_key, weight=1):
         """Add an edge from vertex with key `key1` to vertex with key `key2`
         with a weight."""
-        # TODO if either vertex is not in the graph,
-        # add it - or return an error (choice is up to you).
-        # TODO if both vertices in the graph, add the
-        # edge by making key1 a neighbor of key2
-        # and using the add_neighbor method of the Vertex class.
-        # Hint: the vertex corresponding to key1 is stored in
-        # self.vert_list[key1].
+        """Add edge from vertex with key `from_key` to vertex with key `to_key`.
+        If a weight is provided, use that weight.
+        """
+        if weight != 1 and not self.weighted:
+            print(f"Detected weight of {weight} in unweighted graph.")
+            print("Graph is now weighted, all previous vertices have weight 1")
+            self.weighted = True
+
+        # Add from_key vertex if it is not in the graph
+        if from_key not in self.vert_list:
+            self.add_vertex(from_key)
+
+        # Add to_key vertex if it is not in the graph
+        if to_key not in self.vert_list:
+            self.add_vertex(to_key)
+
+        # Get vertices from keys
+        from_vert = self.vert_list[from_key]
+        to_vert = self.vert_list[to_key]
+
+        # When both vertices in graph, make from_vert a neighbor of to_vert
+        from_vert.add_neighbor(to_vert, weight)
+        # If the graph undirected, add connection back from to_vert to from_key
+        if not self.directed:
+            to_vert.add_neighbor(from_vert, weight)
 
     def get_vertices(self):
         """Return all the vertices in the graph"""
