@@ -1,4 +1,8 @@
 #!python
+from collections import deque
+import random
+import string
+
 
 class Vertex(object):
     """ Vertex Class
@@ -18,8 +22,12 @@ class Vertex(object):
 
     def add_neighbor(self, vertex, weight=1):
         """Add a neighbor along a weighted edge."""
-        # TODO check if vertex is already a neighbor
-        # TODO if not, add vertex to neighbors and assign weight.
+        # Check if vertex is already a neighbor
+        if vertex in self.neighbors:
+            # If so, raise KeyError
+            raise KeyError(f"{vertex.id} is already a neighbor of {self.id}")
+        # If not, add vertex to neighbors and assign weight
+        self.neighbors[vertex] = weight
 
     def __str__(self):
         """Output the list of neighbors of this vertex."""
@@ -27,7 +35,8 @@ class Vertex(object):
 
     def get_neighbors(self):
         """Return the neighbors of this vertex."""
-        # TODO return the neighbors
+        # Return the neighbors
+        return set(self.neighbors.keys())
 
     def get_id(self):
         """Return the id of this vertex."""
@@ -35,14 +44,15 @@ class Vertex(object):
 
     def get_edge_weight(self, vertex):
         """Return the weight of this edge."""
-        # TODO return the weight of the edge from this
-        # vertex to the given vertex.
+        # Return the weight of the edge from this vertex to the given vertex
+        return self.neighbors[vertex]
 
 
 class Graph:
     """ Graph Class
     A class demonstrating the essential facts and functionalities of graphs.
     """
+
     def __init__(self):
         """Initialize a graph object with an empty dictionary."""
         self.vert_list = {}
@@ -68,7 +78,7 @@ class Graph:
         # TODO if both vertices in the graph, add the
         # edge by making key1 a neighbor of key2
         # and using the add_neighbor method of the Vertex class.
-        # Hint: the vertex corresponding to key1 is stored in 
+        # Hint: the vertex corresponding to key1 is stored in
         # self.vert_list[key1].
 
     def get_vertices(self):
