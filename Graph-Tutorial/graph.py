@@ -1,67 +1,8 @@
 #!python
 from collections import deque
+from vertex import Vertex
 import random
 import string
-
-
-class Vertex(object):
-    """ Vertex Class
-    A helper class for the Graph class that defines vertices and vertex
-    neighbors.
-    """
-
-    def __init__(self, vertex_id):
-        """Initialize a vertex and its neighbors.
-
-        neighbors: set of vertices adjacent to self,
-        stored in a dictionary with key = vertex,
-        value = weight of edge between self and neighbor.
-        """
-        self.id = vertex_id
-        self.neighbors = {}
-        self.parent = None
-
-    def __repr__(self):
-        """Return representation of vertex object."""
-        return f"Vertex({self.id})"
-
-    def __str__(self):
-        """Output the list of neighbors of this vertex."""
-        return f"{self.id} adjacent to {[x.id for x in self.neighbors]}"
-
-    def _check_type(self, other, operator):
-        """Raise TypeError if there is a type mismatch."""
-        # Get the name of the type of other object
-        other_type = type(other).__name__
-        # Create the error message if there is a type mismatch
-        error_message = f"""'{operator}' not supported between
-                            instances of 'Vertex' and '{other_type}'"""
-        # If the other object is not of type Vertex, raise TypeError
-        if not isinstance(other, Vertex):
-            raise TypeError(error_message)
-
-    def add_neighbor(self, vertex, weight=1):
-        """Add a neighbor along a weighted edge."""
-        # Check if vertex is already a neighbor
-        if vertex in self.neighbors:
-            # If so, raise KeyError
-            raise KeyError(f"{vertex.id} is already a neighbor of {self.id}")
-        # If not, add vertex to neighbors and assign weight
-        self.neighbors[vertex] = weight
-
-    def get_neighbors(self):
-        """Return the neighbors of this vertex."""
-        # Return the neighbors
-        return set(self.neighbors.keys())
-
-    def get_id(self):
-        """Return the id of this vertex."""
-        return self.id
-
-    def get_edge_weight(self, vertex):
-        """Return the weight of this edge."""
-        # Return the weight of the edge from this vertex to the given vertex
-        return self.neighbors[vertex]
 
 
 class Graph:
@@ -331,15 +272,81 @@ class Graph:
         path[:] = reversed(path)
         return path
 
-    def find_path(self, from_vert, to_vert):
-            # Make sure that both nodes from_vert and to_vert are actually in the graph
-            # Run BFS or DFS starting from from_vert
-            # Figure out a way to keep track of each path you take
-            # Once you find to_vert, end the search.
-            # Since you've been tracking the paths, find the path that goes from from_vert to to_vert
-            # Return the path, in the order of nodes visited starting with from_vert and ending with to_vert
-            # Driver code
-        pass
+    def depth_first_search(self, vertex, least_first=True, clear_parents=True):
+        """Create DFS spanning tree by setting parent property of vertex."""
+        # Raise error if non vertex object is passed in as vertex
+        if not isinstance(vertex, Vertex):
+            raise TypeError("vertex parameter must be of type Vertex")
+
+        # Get set of vertices
+        vertices = self.get_vertices()
+
+        # Raise error if vertex not in the graph
+        if vertex not in vertices:
+            raise ValueError(f"Vertex({vertex}) is not in the Graph")
+
+        # Ensure vertex does not have stale parent property from previous call
+        if clear_parents:
+            # For each vertex, set the parent to None
+            for vert in vertices:
+                vert.parent = None
+
+            # Set starting vertex parent to False, it does not get a parent
+            vertex.parent = False
+
+        # If order matters, sort the neighbors
+        if least_first:
+            # Sort the neighbors
+            neighbors = sorted(vertex.get_neighbors())
+        else:
+            # Otherwise, just get the unordered set
+            neighbors = vertex.get_neighbors()
+
+        # For each neighor of this vertex,
+        for neighbor in neighbors:
+            # Check if it does not have a parent
+            if neighbor.parent is None:
+                # If it doesn't, give it a parent
+                neighbor.parent = vertex
+                # Continue the depth first search (no return needed)
+                self.depth_first_search(neighbor, least_first, False)
+
+    def find_path(self, from_v, to_u):
+        """Find any path from from_vert to to_vert."""
+        # Raise error if vertex object is passed in as start or end
+        if isinstance(from_v, Vertex) or isinstance(to_u, Vertex):
+            raise TypeError("Expected vertex ids as start and end.")
+
+        # Raise error if start or end keys do not exist in graph
+        if from_v not in self.vert_list:
+            raise KeyError(f"Vertex({from_v}) is not in the Graph")
+        if to_u not in self.vert_list:
+            raise KeyError(f"Vertex({to_u}) is not in the Graph")
+
+        # Set the starting and ending vertices, using start and end keys
+        start_vert = self.vert_list[from_v]
+        end_vert = self.vert_list[to_u]
+
+        # Run depth first tree that creates spanning tree of graph
+        self.depth_first_search(start_vert, least_first=True)
+
+        # Create a path list and the ending vertex
+        path = [end_vert]
+        parent = end_vert
+        # Go through the parents of each vertex, until start vertex is reached
+        while start_vert != parent:
+            # If parent is None, the spanning tree is broken, no path exists
+            if parent is None:
+                # Return None as no path exists betwen the start and end vertex
+                return None
+
+            # Move to the parent of the current vertex, and add it to the path
+            parent = parent.parent
+            path.append(parent)
+
+        # Reverse the path, and return it
+        path[:] = reversed(path)
+        return path
 
     def clique(self):
         # Start with an arbitrary vertex u and add it to the clique
