@@ -49,10 +49,6 @@ class Vertex(object):
         # If not, add vertex to neighbors and assign weight
         self.neighbors[vertex] = weight
 
-    def __str__(self):
-        """Output the list of neighbors of this vertex."""
-        return f"{self.id} adjacent to {[x.id for x in self.neighbors]}"
-
     def get_neighbors(self):
         """Return the neighbors of this vertex."""
         # Return the neighbors
