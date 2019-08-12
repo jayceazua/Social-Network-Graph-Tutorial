@@ -20,6 +20,17 @@ class Vertex(object):
         self.id = vertex_id
         self.neighbors = {}
 
+    def _check_type(self, other, operator):
+        """Raise TypeError if there is a type mismatch."""
+        # Get the name of the type of other object
+        other_type = type(other).__name__
+        # Create the error message if there is a type mismatch
+        error_message = f"""'{operator}' not supported between
+                            instances of 'Vertex' and '{other_type}'"""
+        # If the other object is not of type Vertex, raise TypeError
+        if not isinstance(other, Vertex):
+            raise TypeError(error_message)
+
     def add_neighbor(self, vertex, weight=1):
         """Add a neighbor along a weighted edge."""
         # Check if vertex is already a neighbor
@@ -188,7 +199,6 @@ class Graph:
             else:
                 # Remove parenthesis from strings, and convert strings to ints
                 self.add_edge(int(data[0]), int(data[1]))
-
 
     def breadth_first_search(self, vertex, n, only_new=True):
         """Find all vertices n edges away from the passed in vertex."""
