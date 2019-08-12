@@ -19,6 +19,15 @@ class Vertex(object):
         """
         self.id = vertex_id
         self.neighbors = {}
+        self.parent = None
+
+    def __repr__(self):
+        """Return representation of vertex object."""
+        return f"Vertex({self.id})"
+
+    def __str__(self):
+        """Output the list of neighbors of this vertex."""
+        return f"{self.id} adjacent to {[x.id for x in self.neighbors]}"
 
     def _check_type(self, other, operator):
         """Raise TypeError if there is a type mismatch."""
